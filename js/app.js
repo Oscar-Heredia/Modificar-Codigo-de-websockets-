@@ -2,6 +2,7 @@
 let parrafo = document.getElementById("parrafoderespuesta");
 let usuarios = new Array();
 let socket;
+let datbox;
 
 //Se declara la estructura del JSON
 var list = {
@@ -11,6 +12,12 @@ var list = {
 const btnConectaralservidor = document.getElementById("btnConectaralservidor"); //Se crea la union  
 const btnMandarmensaje = document.getElementById("btnmandarmensaje");
 const listUsuarios = document.getElementById("listusuarios");
+const chat = document.getElementById("chat");
+const enviar = document.getElementById("enviar");
+let messagebox= document.getElementById("message");
+let msgpriv = document.getElementById("mensajeparausuario");
+let userDest = document.getElementById("usuariomandarmensaje");
+let btnPriv = document.getElementById("btnmandarmensaje");
 
 btnConectaralservidor.addEventListener("click", ()=>{
 
@@ -22,10 +29,27 @@ btnConectaralservidor.addEventListener("click", ()=>{
 
     socket.onopen = function(e)
     {
+
     console.log("Conexión para: "+username.nombre);
     socket.send(JSON.stringify(username));
 
-    
+    enviar.addEventListener("click",()=>{
+        datbox = {tipo:2,remitente:username.nombre,msg:messagebox.value}
+
+        socket.send(JSON.stringify(datbox));
+
+        messagebox.value = "";
+        });
+
+    btnPriv.addEventListener("click", ()=>{
+
+        datbox = {tipo:3,remitente:username.nombre,dest:userDest.value,msg:msgpriv.value};
+
+        socket.send(JSON.stringify(datbox));
+
+        userDest.value="";
+        msgpriv.value="";
+    })
 
     };
 
@@ -39,6 +63,17 @@ btnConectaralservidor.addEventListener("click", ()=>{
         {
             let text = `Bienvenido: ${evento.nombre}<br>`
             parrafo.innerHTML =  text;
+        }
+        if(evento.tipo == 2){
+
+            let text = `${evento.remitente}: ${evento.msg}<br>`;
+            console.log(text);
+            chat.innerHTML += text;
+        }
+        if(evento.tipo == 3)
+        {
+            let text = `${evento.remitente} te dice ${evento.msg}<br>`;
+            chat.innerHTML+=text;
         }
     }
 

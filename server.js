@@ -23,8 +23,23 @@ wss.on('connection', ws => {
       usuarios[i].socket.send(JSON.stringify(mess));
       }
 
+    }else if(mess.tipo == 2)
+    {
+      for(let i=0; i<usuarios.length; i++)
+      {
+        usuarios[i].socket.send(JSON.stringify(mess));
+      }
+    }else if(mess.tipo == 3)
+    {
+      for(let i=0; i<usuarios.length; i++)
+      {
+        if(usuarios[i].msg==mess.dest)
+        {
+          usuarios[i].socket.send(JSON.stringify(mess));
+        }
+      }
     }
   })
   //ws.send('Hello! Message From Server!!')
 
-})
+});
