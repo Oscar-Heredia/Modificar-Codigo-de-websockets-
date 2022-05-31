@@ -11,14 +11,20 @@ wss.on('connection', ws => {
   
   ws.on('message', message => {
     console.log(`Received message => ${message}`)
-    usuarios.push({sck:ws,msg:message});
-    for(i=0; i<usuarios.length; i++)
+    let mess = JSON.parse(message);
+
+    if(mess.tipo==1)
     {
+      usuarios.push({msg:mess.nombre,socket:ws});
+
+      for(i=0; i<usuarios.length; i++)
+      {
       //console.log(usuarios[i]);
-      usuarios[i].sck.send('Se conecto'+message);
+      usuarios[i].socket.send(JSON.stringify(mess));
+      }
+
     }
-  
   })
-  let i;
   //ws.send('Hello! Message From Server!!')
+
 })

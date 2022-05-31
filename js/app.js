@@ -14,46 +14,33 @@ const listUsuarios = document.getElementById("listusuarios");
 
 btnConectaralservidor.addEventListener("click", ()=>{
 
-    let nombre = document.getElementById("inpnombre").value;
-    usuarios.push(nombre);
-    console.log(nombre);
-
-    list.datos.push({
-        "nombre": nombre,
-        "tipodedatos": "1"
-      });
-
-      console.log(list);
-
-    json = JSON.stringify(list); //  la lista de objetos en Json
-    var obj = JSON.parse(json); //Parsea el Json al objeto anterior.
-
-
     socket = new WebSocket("ws://localhost:8080");
+
+    let nombre = document.getElementById("inpnombre").value;
+
+    let username = {tipo:1, nombre:nombre};
 
     socket.onopen = function(e)
     {
-    console.log("[open] Conexión establecida");
-    console.log("Enviando al servidor");
-    socket.send("Mi nombres es " + nombre);
+    console.log("Conexión para: "+username.nombre);
+    socket.send(JSON.stringify(username));
+
+    
+
     };
 
     
-    socket.onmessage = function(event)
+    socket.onmessage = (event) =>
     {
-        parrafo.innerHTML = (`${event.data}`);
-        console.log(`[message] Datatos recibidos del servidor: ${event.data}`)
-    };
+        let evento = JSON.parse(event.data);
+        console.log(evento);
 
-    socket.onclose = function(event)
-    {
-        if(event.wasClean)
+        if(evento.tipo == 1)
         {
-            alert(`[close] conexion cerrada limpiamnete, codigo=${event.code} motivo=${event.reason}`);
-        } else {
-            alert('[close] La conexion se cayo');
+            let text = `Bienvenido: ${evento.nombre}<br>`
+            parrafo.innerHTML =  text;
         }
-    };
+    }
 
     socket.onerror = function(error){
         alert(`[error] ${error.message}`);
@@ -70,6 +57,16 @@ btnConectaralservidor.addEventListener("click", ()=>{
     };
     
 });
+
+/*socket.onclose = function(event)
+    {
+        if(event.wasClean)
+        {
+            alert(`[close] conexion cerrada limpiamnete, codigo=${event.code} motivo=${event.reason}`);
+        } else {
+            alert('[close] La conexion se cayo');
+        }
+    };*/
 
 btnMandarmensaje.addEventListener("click", ()=>{
     
